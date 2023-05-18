@@ -1,16 +1,45 @@
-from sklearn.datasets import load_iris
+from scipy.cluster.hierarchy import fcluster, linkage
+from sklearn.datasets import load_iris, load_diabetes, load_wine
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+from sklearn.cluster import BisectingKMeans
+import seaborn as sns
+import pandas as pd
 
 
-def kmeans_hierarquico(base_de_dados):
-    print("Processando método de agrupamento hierárquico...")
+def kmeans_bisecting(base_de_dados):
+    print("\nProcessando método de agrupamento particional K-Means...")
     elbow(base_de_dados)
+    # Definindo o número de clusters desejado
+    num_clusters = int(input("\nDigite a quantidade de Clusters com base no Método Elbow: "))
+
+    kmeans = BisectingKMeans(n_clusters=num_clusters, random_state=0).fit(base_de_dados)
+
+    # Obtendo os rótulos dos clusters
+    rotulos = kmeans.labels_
+
+    # Plotando o gráfico de dispersão dos dados com cores representando os clusters
+    plt.scatter(base_de_dados[:, 0], base_de_dados[:, 1], c=rotulos)
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Agrupamento Bi-secting K-Means')
+    plt.show()
 
 
-def kmeans_particional(base_de_dados):
-    print("Processando método de agrupamento particional...")
-    elbow(base_de_dados)
+def linkage_hierarquico(base_de_dados):
+    print("\nProcessando método de agrupamento hierárquico Linkage...")
+    # Aplicando o algoritmo de agrupamento hierárquico com linkage
+    matriz_linkage = linkage(base_de_dados, method='complete')
+
+    num_clusters = 3
+
+    rotulos = fcluster(matriz_linkage, num_clusters, criterion='maxclust')
+
+    plt.scatter(base_de_dados[:, 0], base_de_dados[:, 1], c=rotulos)
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Agrupamento Hierárquico com Linkage')
+    plt.show()
 
 
 def elbow(dados):
@@ -35,8 +64,8 @@ def menu_metodo_agrupamento():
     r = 0
     while r not in ["1", "2"]:
         print("\n------ ESCOLHA O MÉTODO ------")
-        print("1 - Hierárquico")
-        print("2 - Partiocional")
+        print("1 - K-Means - bi-secting (particionado)")
+        print("2 - Linkage (hierarquico)")
         r = input("Qual método você deseja? ")
     return r
 
@@ -47,33 +76,33 @@ def processar_base_iris():
     dados = iris.data
     r = menu_metodo_agrupamento()
     if r == "1":
-        kmeans_hierarquico(dados)
+        kmeans_bisecting(dados)
     elif r == "2":
-        kmeans_particional(dados)
+        linkage_hierarquico(dados)
 
 
-def processar_base_2():
+def processar_base_diabetes():
     print("Processando a base de dados 2...")
-    base2 = load_iris()
+    base2 = load_wine()
     dados = base2.data
     r = menu_metodo_agrupamento()
     if r == "1":
-        kmeans_hierarquico(dados)
+        kmeans_bisecting(dados)
     elif r == "2":
-        kmeans_particional(dados)
+        linkage_hierarquico(dados)
 
 
 resposta = 0
 while resposta not in ["1", "2"]:
     print("\n------ ESCOLHA A BASE DE DADOS ------")
     print("1 - Base Iris")
-    print("2 - Base 2")
+    print("2 - Base Diabetes")
     resposta = input("Qual base de dados você deseja? ")
 
 if resposta == "1":
     processar_base_iris()
 elif resposta == "2":
-    processar_base_2()
+    processar_base_diabetes()
 
 '''
 # Carregando a base de dados Iris
