@@ -1,17 +1,18 @@
 from scipy.cluster.hierarchy import fcluster, linkage
 from sklearn.datasets import load_iris, load_diabetes, load_wine
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 from sklearn.cluster import BisectingKMeans
 from scipy.cluster.hierarchy import dendrogram, linkage
 from matplotlib import pyplot as plt
+import pandas as pd
+import plotly.express as px
 
 
 def kmeans_bisecting(base_de_dados):
     print("\nProcessando método de agrupamento particional K-Means...")
     elbow(base_de_dados)
     # Definindo o número de clusters desejado
-    num_clusters = int(input("\nDigite a quantidade de Clusters com base no Método Elbow: "))
+    num_clusters = int(input("\nDigite a quantidade de Clusters com base no Método Elbow: \n"))
 
     kmeans = BisectingKMeans(n_clusters=num_clusters, random_state=0).fit(base_de_dados)
 
@@ -80,6 +81,15 @@ def menu_metodo_agrupamento():
 
 def processar_base_iris():
     print("Processando a base de dados Iris...")
+    df = px.data.iris()
+    features = ["sepal_width", "sepal_length", "petal_width", "petal_length"]
+    fig = px.scatter_matrix(
+        df,
+        dimensions=features,
+        color="species"
+    )
+    fig.update_traces(diagonal_visible=False)
+    fig.show()
     iris = load_iris()
     dados = iris.data
     r = menu_metodo_agrupamento()
@@ -89,7 +99,7 @@ def processar_base_iris():
         linkage_hierarquico(dados)
 
 
-def processar_base_diabetes():
+def processar_base_wine():
     print("Processando a base de dados 2...")
     base2 = load_wine()
     dados = base2.data
@@ -104,10 +114,10 @@ resposta = 0
 while resposta not in ["1", "2"]:
     print("\n------ ESCOLHA A BASE DE DADOS ------")
     print("1 - Base Iris")
-    print("2 - Base Diabetes")
+    print("2 - Base Wine")
     resposta = input("Qual base de dados você deseja? ")
 
 if resposta == "1":
     processar_base_iris()
 elif resposta == "2":
-    processar_base_diabetes()
+    processar_base_wine()
