@@ -3,8 +3,8 @@ from sklearn.datasets import load_iris, load_diabetes, load_wine
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from sklearn.cluster import BisectingKMeans
-import seaborn as sns
-import pandas as pd
+from scipy.cluster.hierarchy import dendrogram, linkage
+from matplotlib import pyplot as plt
 
 
 def kmeans_bisecting(base_de_dados):
@@ -25,20 +25,29 @@ def kmeans_bisecting(base_de_dados):
     plt.title('Agrupamento Bi-secting K-Means')
     plt.show()
 
+    print("\n--------BASE DE DADOS--------")
+    print(base_de_dados)
+    print("\n-----------ROTULOS----------")
+    print(rotulos)
+
 
 def linkage_hierarquico(base_de_dados):
     print("\nProcessando método de agrupamento hierárquico Linkage...")
     # Aplicando o algoritmo de agrupamento hierárquico com linkage
-    matriz_linkage = linkage(base_de_dados, method='complete')
 
-    num_clusters = 3
+    matriz_linkage = linkage(base_de_dados, 'complete')
+    fig = plt.figure(figsize=(25, 10))
+    dendogram = dendrogram(matriz_linkage)
+    plt.show()
 
-    rotulos = fcluster(matriz_linkage, num_clusters, criterion='maxclust')
+    matriz_linkage = linkage(base_de_dados, 'single')
+    fig = plt.figure(figsize=(25, 10))
+    dn = dendrogram(matriz_linkage)
+    plt.show()
 
-    plt.scatter(base_de_dados[:, 0], base_de_dados[:, 1], c=rotulos)
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Agrupamento Hierárquico com Linkage')
+    matriz_linkage = linkage(base_de_dados, 'ward')
+    fig = plt.figure(figsize=(25, 10))
+    dn = dendrogram(matriz_linkage)
     plt.show()
 
 
@@ -46,7 +55,6 @@ def elbow(dados):
     elbow_list = []
     # Testando diferentes números de clusters de 1 a 10
     for num_clusters in range(1, 11):
-        # Criando o objeto K-means
         kmeans = KMeans(n_clusters=num_clusters)
         kmeans.fit(dados)
         # Obtendo a soma dos quadrados das distâncias intra-cluster e adicionando na elbow_list
@@ -103,53 +111,3 @@ if resposta == "1":
     processar_base_iris()
 elif resposta == "2":
     processar_base_diabetes()
-
-'''
-# Carregando a base de dados Iris
-iris = load_iris()
-dados = iris.data
-
-print(dados)
-# Definindo o número de clusters para o K-means
-num_clusters_kmeans = 3
-
-# Criando o objeto K-means
-kmeans = KMeans(n_clusters=num_clusters_kmeans)
-
-# Aplicando o K-means aos dados
-kmeans.fit(dados)
-
-# Obtendo os rótulos dos clusters
-rotulos_kmeans = kmeans.labels_
-
-# Definindo o número de clusters para o algoritmo hierárquico
-num_clusters_hierarquico = 3
-
-# Criando o objeto de agrupamento hierárquico
-hierarquico = AgglomerativeClustering(n_clusters=num_clusters_hierarquico)
-
-# Aplicando o agrupamento hierárquico aos dados
-rotulos_hierarquico = hierarquico.fit_predict(dados)
-
-# Imprimindo os resultados do K-means
-print("Rótulos dos clusters (K-means):")
-
-# Plotando os dados com os rótulos do K-means
-print(rotulos_kmeans)
-plt.scatter(dados[:, 0], dados[:, 1], c=rotulos_kmeans)
-plt.xlabel('Característica 1')
-plt.ylabel('Característica 2')
-plt.title('K-means - Rótulos dos Clusters')
-plt.show()
-
-# Imprimindo os resultados do agrupamento hierárquico
-print("\nRótulos dos clusters (Agrupamento hierárquico):")
-
-# Plotando os dados com os rótulos do agrupamento hierárquico
-print(rotulos_hierarquico)
-plt.scatter(dados[:, 0], dados[:, 1], c=rotulos_hierarquico)
-plt.xlabel('Característica 1')
-plt.ylabel('Característica 2')
-plt.title('Agrupamento Hierárquico - Rótulos dos Clusters')
-plt.show()
-'''
